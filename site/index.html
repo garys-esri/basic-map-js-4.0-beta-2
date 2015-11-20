@@ -4,26 +4,34 @@
   <meta charset="utf-8">
   <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
   <title>What's New in the ArcGIS API for JavaScript 4.0 Beta 2</title>
+  <link rel="stylesheet" href="//js.arcgis.com/4.0beta2/esri/css/main.css">
+  <link rel="stylesheet" href="//js.arcgis.com/4.0beta2/dijit/themes/claro/claro.css">
   <style>
     html,
     body {
+      height: 100%;
+      width: 100%;
       padding: 0;
       margin: 0;
     }
+    #viewDiv {
+      padding: 0;
+    }
   </style>
+  
+  <script>var dojoConfig = {parseOnLoad: true};</script>
 
-  <link rel="stylesheet" href="https://js.arcgis.com/4.0beta2/esri/css/main.css">
-  <script src="https://js.arcgis.com/4.0beta2/"></script>
+  <script src="//js.arcgis.com/4.0beta2/"></script>
   <script>
     var viewDivName = "viewDiv";
-    var basemapToggleDivName = "basemapToggleDiv";
   </script>
   <script src="js/basic-map.js"></script>
 </head>
 
-<body>
-  <div id="viewDiv">
-    <div id="basemapToggleDiv" />
-  </div>
+<body class="claro">
+  <div id="viewDiv" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'center'" style="height: 100%"></div>
+  <button data-dojo-type="dijit/form/Button" data-dojo-props="checked: true, onClick: basemapButtonClicked, focusable: false" style="position: absolute; right: 30px; top: 30px;">
+    Toggle Vector Tile Style
+  </button>
 </body>
 </html>
