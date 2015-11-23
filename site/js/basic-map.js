@@ -23,14 +23,20 @@ require([
       Basemap,
       VectorTileLayer
   ) {
-    var primaryStyle = "https://www.arcgis.com/sharing/rest/content/items/f96366254a564adda1dc468b447ed956/resources/styles/root.json";
-    var secondaryStyle = "http://www.arcgis.com/sharing/rest/content/items/3b8814f6ddbd485cae67e8018992246e/resources/styles/root.json";
-    var primaryLayer = new VectorTileLayer({ url: primaryStyle });
-    layers.push(primaryLayer);
-    var secondaryLayer = new VectorTileLayer({ url: secondaryStyle, visible: false });
-    layers.push(secondaryLayer);
+    var styles = [
+      "//www.arcgis.com/sharing/rest/content/items/f96366254a564adda1dc468b447ed956/resources/styles/root.json",
+      "//www.arcgis.com/sharing/rest/content/items/3b8814f6ddbd485cae67e8018992246e/resources/styles/root.json",
+      "mystyle.json"
+    ];
+    var i = 0;
+    for (; i < styles.length; i++) {
+      layers.push(new VectorTileLayer({ url: styles[i] }));
+      if (0 != i) {
+        layers[i].visible = false;
+      }
+    }
     var defaultBasemap = new Basemap({
-      baseLayers: [ primaryLayer, secondaryLayer ],
+      baseLayers: layers,
       title: "Default",
       id: "default"
     });
