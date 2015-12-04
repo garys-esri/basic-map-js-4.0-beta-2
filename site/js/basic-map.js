@@ -18,6 +18,7 @@ require([
   "esri/symbols/SimpleMarkerSymbol",
   "esri/symbols/SimpleLineSymbol",
   "esri/layers/GraphicsLayer",
+  "esri/widgets/Locate",
   "dojo/parser", "dijit/form/Button",
   "dojo/domReady!"
 ], function(
@@ -29,7 +30,8 @@ require([
     PictureMarkerSymbol,
     SimpleMarkerSymbol,
     SimpleLineSymbol,
-    GraphicsLayer
+    GraphicsLayer,
+    Locate
 ) {
   var map = new Map();
 
@@ -76,6 +78,13 @@ require([
     gp.outSpatialReference = map.spatialReference;
     view.on("click", runGp);
   });
+  
+  var locateGraphicsLayer = new GraphicsLayer();
+  map.add(locateGraphicsLayer);
+  new Locate({
+    view: view,
+    graphicsLayer: locateGraphicsLayer
+  }, "locateDiv").startup();
 });
 
 function basemapButtonClicked(val) {

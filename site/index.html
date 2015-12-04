@@ -16,6 +16,12 @@
     }
     #viewDiv {
       padding: 0;
+      height: 100%;
+    }
+    #locateDiv {
+      position: absolute;
+      top: 120px;
+      left: 10px;
     }
   </style>
   
@@ -29,7 +35,9 @@
 </head>
 
 <body class="claro">
-  <div id="viewDiv" style="height: 100%"></div>
+  <div id="viewDiv">
+      <div id="locateDiv"></div>
+  </div>
   <div data-dojo-type="dijit/layout/ContentPane" class="claro" style="position: absolute; left: 100px; top: 30px; background-color: white;">Click a point to get elevation details</div>
   <button data-dojo-type="dijit/form/Button" data-dojo-props="checked: true, onClick: basemapButtonClicked, focusable: false" style="position: absolute; left: 100px; top: 70px;">
     Toggle Vector Tile Style
