@@ -3,8 +3,10 @@ var gpUrl = "http://elevation.arcgis.com/arcgis/rest/services/Tools/Elevation/GP
 var layers = [];
 var visibleLayerIndex = 0;
 var gp;
+var loadingSymbol;
 var markerSymbol;
 var view;
+var gpGraphicsLayer;
 
 require([
   "esri/Map",
@@ -12,8 +14,10 @@ require([
   "esri/Basemap",
   "esri/layers/VectorTileLayer",
   "esri/tasks/Geoprocessor",
+  "esri/symbols/PictureMarkerSymbol",
   "esri/symbols/SimpleMarkerSymbol",
   "esri/symbols/SimpleLineSymbol",
+  "esri/layers/GraphicsLayer",
   "dojo/parser", "dijit/form/Button",
   "dojo/domReady!"
 ], function(
@@ -22,10 +26,11 @@ require([
     Basemap,
     VectorTileLayer,
     Geoprocessor,
+    PictureMarkerSymbol,
     SimpleMarkerSymbol,
-    SimpleLineSymbol
+    SimpleLineSymbol,
+    GraphicsLayer
 ) {
-
   var map = new Map();
 
   view = new MapView({
@@ -53,8 +58,11 @@ require([
   });
   map.basemap = defaultBasemap;
   
+  loadingSymbol = new PictureMarkerSymbol({
+    url: "img/spinner_white.gif"
+  });
   markerSymbol = new SimpleMarkerSymbol({
-    color: [255, 0, 0],
+    color: [0, 255, 0],
     outline: new SimpleLineSymbol({
       color: [255, 255, 255],
       width: 2
@@ -63,6 +71,8 @@ require([
   
   gp = new Geoprocessor(gpUrl);
   map.then(function() {
+    gpGraphicsLayer = new GraphicsLayer();
+    map.add(gpGraphicsLayer);
     gp.outSpatialReference = map.spatialReference;
     view.on("click", runGp);
   });
@@ -99,11 +109,13 @@ function runGp(evt) {
     });
     var inputGraphic = new Graphic({
       geometry: point,
-      symbol: markerSymbol,
+      symbol: loadingSymbol,
       attributes: {
         oid: 1
       }
     });
+    gpGraphicsLayer.clear();
+    gpGraphicsLayer.add(inputGraphic);
     var inputGraphicContainer = [];
     inputGraphicContainer.push(inputGraphic);
     var featureSet = new FeatureSet({
@@ -151,17 +163,20 @@ function handleGpResult(response) {
 }
 
 function displayGpResult(response) {
+  gpGraphicsLayer.clear();
   if ("esriJobSucceeded" === response.jobStatus) {
     require([
       "dojo/request/xhr",
       "esri/identity/IdentityManager",
       "esri/geometry/Point",
-      "esri/geometry/SpatialReference"
+      "esri/geometry/SpatialReference",
+      "esri/Graphic"
     ], function(
       xhr,
       IdentityManager,
       Point,
-      SpatialReference
+      SpatialReference,
+      Graphic
     ) {
       var resultUrl = gp.url + "/jobs/" + response.jobId + "/" + response.results.OutputSummary.paramUrl + "?f=json&token=" + IdentityManager.findCredential(gp.url).token;
       xhr(resultUrl, {
@@ -180,6 +195,11 @@ function displayGpResult(response) {
         view.popup.set("content", "<table border='0'><tr><td>Slope</td><td>" + Math.round(slope * 10) / 10.0 + "°</td></tr><tr><td>Aspect</td><td>" + Math.round(aspect) + "° (" + getHeadingString(aspect) + " &#" + getHeadingArrowAsciiCode(aspect) + ";)</td></tr></table>");
         view.popup.set("visible", true);
         view.popup.set("location", pt);
+        var graphic = new Graphic({
+          geometry: pt,
+          symbol: markerSymbol
+        });
+        gpGraphicsLayer.add(graphic);
       }, function(err) {
         console.log("Error: " + err);
       });
