@@ -147,7 +147,6 @@ function displayGpResult(response) {
           "X-Requested-With": ""
         }
       }).then(function(data) {
-        console.log("Rock and roll: " + data);
         var resultFeature = data.value.features[0];
         var elevation = resultFeature.attributes.MeanElevation;
         var aspect = resultFeature.attributes.MeanAspect;
@@ -155,12 +154,67 @@ function displayGpResult(response) {
         resultFeature.geometry.spatialReference = data.value.spatialReference;
         var pt = Point.fromJSON(resultFeature.geometry);
         view.popup.title = "Elevation: " + Math.round(elevation * 3.28084) + " ft (" + Math.round(elevation) + " m)";
-        view.popup.set("content", "<table border='0'><tr><td>Slope</td><td>" + Math.round(slope * 10) / 10.0 + "°</td><td>Aspect</td><td>" + Math.round(aspect) + "°</td></tr></table>");
+        view.popup.set("content", "<table border='0'><tr><td>Slope</td><td>" + Math.round(slope * 10) / 10.0 + "°</td></tr><tr><td>Aspect</td><td>" + Math.round(aspect) + "° (" + getHeadingString(aspect) + " &#" + getHeadingArrowAsciiCode(aspect) + ";)</td></tr></table>");
         view.popup.set("visible", true);
         view.popup.set("location", pt);
       }, function(err) {
         console.log("Error: " + err);
       });
     });
+  }
+}
+
+/**
+ * Normalizes a number of degrees to the range [0, 360) and returns the result.
+ */
+function fixDegrees(degrees) {
+  while (degrees >= 360) {
+    degrees -= 360;
+  }
+  while (degrees < 0) {
+    degrees += 360;
+  }
+  return degrees;
+}
+
+/**
+ * Returns a text heading like N or SW for a number of degrees.
+ */
+function getHeadingString(degrees) {
+  degrees = fixDegrees(degrees);
+  var northingString = "";
+  var eastingString = "";
+  if (degrees > 292.5 || degrees <= 67.5) {
+    northingString = "N";
+  } else if (degrees > 112.5 && degrees <= 247.5) {
+    northingString = "S";
+  }
+  if (degrees > 22.5 && degrees <= 157.5) {
+    eastingString = "E";
+  } else if (degrees > 202.5 && degrees <= 337.5) {
+    eastingString = "W";
+  }
+  return northingString + eastingString;
+}
+
+function getHeadingArrowAsciiCode(degrees) {
+  var headingString = getHeadingString(degrees);
+  switch (headingString) {
+    case "N":
+      return 8593;
+    case "NE":
+      return 8599;
+    case "E":
+      return 8594;
+    case "SE":
+      return 8600;
+    case "S":
+      return 8595;
+    case "SW":
+      return 8601;
+    case "W":
+      return 8592;
+    case "NW":
+      return 8598;
   }
 }
