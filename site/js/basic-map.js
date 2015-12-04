@@ -152,10 +152,10 @@ function displayGpResult(response) {
         var elevation = resultFeature.attributes.MeanElevation;
         var aspect = resultFeature.attributes.MeanAspect;
         var slope = resultFeature.attributes.MeanSlope;
-        console.log("elevation " + elevation + ", slope " + slope + ", aspect " + aspect);
         resultFeature.geometry.spatialReference = data.value.spatialReference;
         var pt = Point.fromJSON(resultFeature.geometry);
-        view.popup.set("content", "elevation " + elevation + ", slope " + slope + ", aspect " + aspect);
+        view.popup.title = "Elevation: " + Math.round(elevation * 3.28084) + " ft (" + Math.round(elevation) + " m)";
+        view.popup.set("content", "<table border='0'><tr><td>Slope</td><td>" + Math.round(slope * 10) / 10.0 + "°</td><td>Aspect</td><td>" + Math.round(aspect) + "°</td></tr></table>");
         view.popup.set("visible", true);
         view.popup.set("location", pt);
       }, function(err) {
