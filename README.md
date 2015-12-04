@@ -6,4 +6,4 @@ A sample app that demonstrates some of the additions to the ArcGIS API for JavaS
 - [Locate widget](https://developers.arcgis.com/javascript/beta/api-reference/esri-widgets-Locate.html)
 - [Vector tile layers](https://developers.arcgis.com/javascript/beta/api-reference/esri-layers-VectorTileLayer.html)
 
-[View the web app now](https://cdn.rawgit.com/garys-esri/basic-map-js-4.0-beta-2/v1.0.0/site/index.html)
+[View the web app now](https://cdn.rawgit.com/garys-esri/basic-map-js-4.0-beta-2/v1.0.1/site/index.html)

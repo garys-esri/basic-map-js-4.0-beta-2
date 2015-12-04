@@ -76,6 +76,11 @@ require([
     gpGraphicsLayer = new GraphicsLayer();
     map.add(gpGraphicsLayer);
     gp.outSpatialReference = map.spatialReference;
+    view.popup.watch("visible", function(name, oldValue, newValue) {
+      if (!newValue) {
+        gpGraphicsLayer.clear();
+      }
+    });
     view.on("click", runGp);
   });
   
