@@ -84,12 +84,14 @@ function runGp(evt) {
     "esri/geometry/Point",
     "esri/Graphic",
     "esri/tasks/support/FeatureSet",
-    "esri/geometry/SpatialReference"
+    "esri/geometry/SpatialReference",
+    "esri/identity/IdentityManager"
   ], function(
     Point,
     Graphic,
     FeatureSet,
-    SpatialReference
+    SpatialReference,
+    IdentityManager
   ) {
     var point = new Point({
       longitude: evt.mapPoint.longitude,
@@ -123,8 +125,29 @@ function runGp(evt) {
       "FeatureIDField": "oid",
       "IncludeSlopeAspect": true
     };
-    gp.submitJob(params).then(displayGpResult);
+    if (!IdentityManager.findCredential(gpUrl)) {
+      var idManagerJson = getCookie("idManagerJson");
+      if (idManagerJson && 0 < idManagerJson.length) {
+        IdentityManager.initialize(JSON.parse(idManagerJson));
+      }
+    }
+    gp.submitJob(params).then(handleGpResult);
   });
+}
+
+function handleGpResult(response) {
+  require([
+    "esri/identity/IdentityManager"
+  ], function(
+    IdentityManager
+  ) {
+    //1. Store the IdentityManager as a cookie
+    var idManagerJson = JSON.stringify(IdentityManager.toJSON());
+    setCookie("idManagerJson", idManagerJson, 30);
+  });  
+  
+  //2. Display the result
+  displayGpResult(response);
 }
 
 function displayGpResult(response) {
@@ -217,4 +240,25 @@ function getHeadingArrowAsciiCode(degrees) {
     case "NW":
       return 8598;
   }
+}
+
+/**
+ * Cookie methods were lifted from http://www.w3schools.com/js/js_cookies.asp .
+ */
+function setCookie(cname, cvalue, exdays) {
+  var d = new Date();
+  d.setTime(d.getTime() + (exdays*24*60*60*1000));
+  var expires = "expires="+d.toUTCString();
+  document.cookie = cname + "=" + cvalue + "; " + expires;
+}
+
+function getCookie(cname) {
+  var name = cname + "=";
+  var ca = document.cookie.split(';');
+  for(var i=0; i<ca.length; i++) {
+    var c = ca[i];
+    while (c.charAt(0)==' ') c = c.substring(1);
+    if (c.indexOf(name) == 0) return c.substring(name.length,c.length);
+  }
+  return "";
 }
