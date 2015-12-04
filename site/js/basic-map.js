@@ -1,4 +1,4 @@
-var gpUrl = "http://elevation.arcgis.com/arcgis/rest/services/Tools/Elevation/GPServer/SummarizeElevation";
+var gpUrl = "//elevation.arcgis.com/arcgis/rest/services/Tools/Elevation/GPServer/SummarizeElevation";
 
 var layers = [];
 var visibleLayerIndex = 0;
